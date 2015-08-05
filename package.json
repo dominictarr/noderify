@@ -10,13 +10,12 @@
   "dependencies": {
     "nodepack": "^3.2.0",
     "module-deps": "^3.9.0",
-    "resolve": "^1.1.6",
-    "through": "^2.3.8"
+    "resolve": "^1.1.6"
   },
   "bin": "./index.js",
   "devDependencies": {},
   "scripts": {
-    "prepublish": "npm ls &&  npm test",
+    "prepublish": "npm ls",
     "test": "set -e; for t in test/*.js; do node $t; done"
   },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
