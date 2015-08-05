@@ -1,11 +1,11 @@
 {
-  "name": "nodeify",
+  "name": "noderify",
   "description": "browserify for node",
   "version": "0.0.2",
-  "homepage": "https://github.com/dominictarr/nodeify",
+  "homepage": "https://github.com/dominictarr/noderify",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/nodeify.git"
+    "url": "git://github.com/dominictarr/noderify.git"
   },
   "dependencies": {
     "nodepack": "^3.2.0",
