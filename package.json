@@ -1,0 +1,25 @@
+{
+  "name": "nodeify",
+  "description": "browserify for node",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dominictarr/nodeify",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dominictarr/nodeify.git"
+  },
+  "dependencies": {
+    "browser-pack": "^5.0.1",
+    "module-deps": "^3.9.0",
+    "nodepack": "^3.2.0",
+    "resolve": "^1.1.6",
+    "through": "^2.3.8"
+  },
+  "bin": "./index.js",
+  "devDependencies": {},
+  "scripts": {
+    "prepublish": "npm ls &&  npm test",
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
+  "license": "MIT"
+}
