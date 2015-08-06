@@ -1,52 +1,126 @@
 #! /usr/bin/env node
 
 var path = require('path')
+var join = path.join
 var fs = require('fs')
 var moduleDeps = require('module-deps')
 var resolve = require('resolve')
+var through = require('through2')
 
-//hard coded modules that get replaced.
-//core modules or modules with c bits.
-//Obviously, this should be fixed so it's not hardcoded.
-var filter = [
-  'sodium', 'chloride', 'path', 'fs', 'leveldown', 'net'
+// io.js native modules
+var native_modules = [
+  'assert', 'buffer', 'child_process', 'cluster', 'console',
+  'constants', 'crypto', 'dgram', 'dns', 'domain', 'events',
+  'freelist', 'fs', 'http', 'https', 'module', 'net', 'os',
+  'path', 'process', 'punycode', 'querystring', 'readline',
+  'repl', 'smalloc', 'stream', 'string_decoder', 'sys',
+  'timers', 'tls', 'tty', 'url', 'util', 'v8', 'vm', 'zlib'
 ]
 
+var argv = require('minimist')(process.argv.slice(2), {
+  alias: {
+    f: 'filter'
+  }
+})
+
+var filter = [].concat(argv.filter).concat(native_modules)
+
+function exists (p) {
+  try {
+    (fs.accessSync || fs.statSync)(p)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
+function pkgRoot (file) {
+  var dir = path.dirname(file)
+    , prev
+  while (true) {
+    if (exists(join(dir, 'package.json')) || exists(join(dir, 'node_modules')))
+      return dir
+
+    if (prev === dir) {
+      throw new Error('Could not find module root for ' + file)
+    }
+
+    prev = dir
+    dir = join(dir, '..')
+  }
+}
+
+var entry = argv._[0] ? path.resolve(argv._[0]) : __filename
+var replace = {}
 var deps = moduleDeps({
   ignoreMissing: true,
+  globalTransform: function (file, opts) {
+    return through(function (chunk, enc, cb) {
+      chunk += ''
+      var s = this
+      var m = chunk.match(/require\(.bindings.\)\(.([\-_a-zA-Z0-9.]+).\)/)
+      if (m) {
+        var basedir = pkgRoot(file)
+        var n = m[1].substr(-5) === '.node' ? m[1] : m[1]+ '.node'
+        resolve('./build/Release/'+n, {basedir: pkgRoot(file), extensions: ['.node']},
+          function (err, p) {
+            chunk = chunk.replace(m[0], "require('./"+path.relative(basedir, p)+"')")
+            s.push(chunk)
+            cb()
+          })
+      } else {
+        s.push(chunk)
+        cb()
+      }
+    })
+  },
   filter: function (s) {
     return !~filter.indexOf(s)
   },
   resolve: function (a, b, cb) {
-    return resolve (a, {basedir: path.dirname(b.filename)},
-      function (err, path) {
-        cb(null, /^\//.test(path) ? path : null)
+    return resolve (a, {basedir: path.dirname(b.filename), extensions: ['.js', '.json', '.node']},
+      function (err, file) {
+        if (file) {
+          if (file[0] !== '/') {
+            var c = a.split('/')[0]
+            if (c[0] !== '.') console.error('missing dependency. need to install:', c)
+          } else if (file && file.substr(-5) === '.node') {
+            replace[a] = path.relative(path.dirname(entry), file)
+            return cb(null, null)
+          }
+        }
+
+        cb(null, /^\//.test(file) ? file : null)
     })
   },
   postFilter: function (id, file, pkg) {
-    //return true
     return !!file
   }
 })
   .on('data', function (e) {
     e.source = e.source.replace(/^\s*#![^\n]*/, '\n')
+    // secret magic sauce
+    for (var id in replace) {
+      e.source = e.source.replace(new RegExp("require\\(\\'"+id+"\\'\\)", 'g'), "require('./"+replace[id]+"')")
+    }
+
     try {
       JSON.parse(e.source)
       e.source = 'module.exports = ' + e.source
     } catch (e) { }
 
     for(var k in e.deps) {
-      console.error(e.id, k, e.deps[k])
+      // console.error(e.id, k, e.deps[k])
       if(!e.deps[k])
         delete e.deps[k]
     }
   })
 
 // hacks to make browser-pack work with node
-var preludePath = path.join(__dirname, 'prelude.js')
+var preludePath = join(__dirname, 'prelude.js')
 
 ;(function () {
-  var bpackPath = path.join(__dirname, 'node_modules', 'browser-pack', 'index.js')
+  var bpackPath = join(__dirname, 'node_modules', 'browser-pack', 'index.js')
   var src = fs.readFileSync(bpackPath, 'utf-8')
   if (~src.indexOf('wrappedSource')) {
     src = src.replace(/wrappedSource/g, 'warpedSource')
@@ -68,4 +142,4 @@ deps
   .pipe(require('browser-pack')({raw: true, prelude: fs.readFileSync(preludePath, 'utf-8'), preludePath: preludePath}))
   .pipe(process.stdout)
 
-deps.end(process.argv[2] ? path.resolve(process.argv[2]) : __filename)
+deps.end(entry)
