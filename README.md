@@ -1,4 +1,4 @@
-# nodeify
+# noderify
 
 browserfy for the server side.
 
@@ -60,7 +60,7 @@ lets bundle this into one file, so we only read one file, and
 then everything is in memory.
 
 ``` js
-nodeify scuttlebot/bin.js > b.js
+noderify scuttlebot/bin.js > b.js
 time node b.js version
 6.1.0
 
