@@ -1,7 +1,7 @@
 {
   "name": "noderify",
   "description": "browserify for node",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/dominictarr/noderify",
   "repository": {
     "type": "git",
