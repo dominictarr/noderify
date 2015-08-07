@@ -8,6 +8,8 @@ var resolve = require('resolve')
 var through = require('through2')
 var nodepack = require('nodepack')
 var sort = require('sort-stream')
+var crypto = require('crypto')
+var map = {}
 
 // io.js native modules
 var native_modules = [
@@ -104,7 +106,14 @@ var deps = moduleDeps({
           }
         }
 
-        cb(null, /^\//.test(file) ? file : null)
+        if ((file = /^\//.test(file) ? file : null) && !argv['disable-hashing']) {
+          fs.readFile(file, function (err, contents) {
+            var h = crypto.createHash('sha1').update(contents).digest('hex')
+            cb(null, map[h] || (map[h] = file))
+            if (argv.verbose && map[h] && file !== map[h])
+              console.error('\n'+h, '\n<-', file, '\n->', map[h])
+          })
+        } else cb(null, file)
     })
   },
   postFilter: function (id, file, pkg) {
