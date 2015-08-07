@@ -56,7 +56,14 @@ function pkgRoot (file) {
   }
 }
 
-var entry = argv._[0] ? path.resolve(argv._[0]) : __filename
+
+if(!argv._[0]) {
+  console.error('usage: noderify entry.js > bundle.js')
+  process.exit(1)
+}
+
+var entry = path.resolve(argv._[0])
+
 var replace = {}
 var deps = moduleDeps({
   ignoreMissing: true,
