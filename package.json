@@ -8,7 +8,7 @@
     "url": "git://github.com/dominictarr/noderify.git"
   },
   "dependencies": {
-    "browser-pack": "^5.0.1",
+    "nodepack": "^6.0.1",
     "minimist": "^1.1.2",
     "module-deps": "^3.9.0",
     "resolve": "^1.1.6",

@@ -6,6 +6,7 @@ var fs = require('fs')
 var moduleDeps = require('module-deps')
 var resolve = require('resolve')
 var through = require('through2')
+var nodepack = require('nodepack')
 
 // io.js native modules
 var native_modules = [
@@ -19,7 +20,8 @@ var native_modules = [
 
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {
-    f: 'filter'
+    f: 'filter',
+    p: 'prelude'
   }
 })
 
@@ -116,30 +118,15 @@ var deps = moduleDeps({
     }
   })
 
-// hacks to make browser-pack work with node
-var preludePath = join(__dirname, 'prelude.js')
-
-;(function () {
-  var bpackPath = join(__dirname, 'node_modules', 'browser-pack', 'index.js')
-  var src = fs.readFileSync(bpackPath, 'utf-8')
-  if (~src.indexOf('wrappedSource')) {
-    src = src.replace(/wrappedSource/g, 'warpedSource')
-    src = src.replace('function(require,module,exports){\\n', 'function(require,module,exports,__dirname,__filename){\\n')
-    src = src.replace(
-      "            ']'", [
-      "            ',\\n',",
-      "            JSON.stringify(row.id),",
-      "            ',\\n',",
-      "            JSON.stringify(path.dirname(row.id)),",
-      "            '\\n]'",
-      ].join('\n')
-    )
-    fs.writeFileSync(bpackPath, src)
-  }
-}())
+var opts = {raw: true}
+if (argv.prelude) {
+  var preludePath = path.resolve(argv.prelude)
+  opts.prelude = fs.readFileSync(preludePath, 'utf-8')
+  opts.preludePath = preludePath
+}
 
 deps
-  .pipe(require('browser-pack')({raw: true, prelude: fs.readFileSync(preludePath, 'utf-8'), preludePath: preludePath}))
+  .pipe(nodepack(opts))
   .pipe(process.stdout)
 
 deps.end(entry)
