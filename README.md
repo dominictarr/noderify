@@ -71,6 +71,15 @@ sys     0m0.033s
 # that is MUCH better! 8.76 times faster!!!
 ```
 
+## Usage
+
+```
+noderify
+  -f mod                # excludes mod from the bundle
+  -p prelude.js         # specify a custom prelude file (see nodepack's implementation for reference)
+
+```
+
 ## TODO
 
 This was hacked up before a talk about secure-scuttlebutt
