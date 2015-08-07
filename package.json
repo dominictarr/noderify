@@ -19,7 +19,7 @@
   "devDependencies": {},
   "scripts": {
     "prepublish": "npm ls",
-    "test": "set -e; for t in test/*.js; do node $t; done"
+    "test": "test.sh"
   },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "license": "MIT"
