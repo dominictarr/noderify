@@ -21,9 +21,13 @@ var native_modules = [
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {
     f: 'filter',
-    p: 'prelude'
+    p: 'prelude',
+    v: 'version'
   }
 })
+
+if(argv.version)
+  return console.log(require('./package.json').version)
 
 var filter = [].concat(argv.filter).concat(native_modules)
 
