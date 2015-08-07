@@ -8,10 +8,11 @@
     "url": "git://github.com/dominictarr/noderify.git"
   },
   "dependencies": {
-    "nodepack": "^6.0.1",
     "minimist": "^1.1.2",
     "module-deps": "^3.9.0",
+    "nodepack": "^6.0.1",
     "resolve": "^1.1.6",
+    "sort-stream": "^1.0.1",
     "through2": "^2.0.0"
   },
   "bin": "./index.js",

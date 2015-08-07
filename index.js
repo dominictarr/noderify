@@ -7,6 +7,7 @@ var moduleDeps = require('module-deps')
 var resolve = require('resolve')
 var through = require('through2')
 var nodepack = require('nodepack')
+var sort = require('sort-stream')
 
 // io.js native modules
 var native_modules = [
@@ -137,6 +138,10 @@ if (argv.prelude) {
 }
 
 deps
+  .pipe(sort(function (a, b) {
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+  }))
+
   .pipe(nodepack(opts))
   .pipe(process.stdout)
 
