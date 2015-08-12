@@ -22,7 +22,7 @@ module.exports = function (cb) {
     content[data.sha256 = hash(data.source)] = data.source
 
     //map of which file has what hash, plus what deps it uses.
-    files[data.id] = [data.sha256, data.deps]
+    files[data.id] = [data.sha256, sort(data.deps)]
 
     if(data.entry)
       entry = data.id
@@ -32,10 +32,10 @@ module.exports = function (cb) {
     cb(null,
 
       //{<hash>: source,...}
-      content,
+      sort(content),
 
       //{<filename>: [<hash>, {<require>: <resolve-filename>}],..}
-      files,
+      sort(files),
 
       //filename to start with.
       entry
