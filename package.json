@@ -1,7 +1,7 @@
 {
   "name": "noderify",
   "description": "browserify for node",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "homepage": "https://github.com/dominictarr/noderify",
   "repository": {
     "type": "git",
@@ -10,16 +10,16 @@
   "dependencies": {
     "minimist": "^1.1.2",
     "module-deps": "^3.9.0",
-    "nodepack": "^6.0.1",
+    "nodepack": "~6.0.3",
     "resolve": "^1.1.6",
     "sort-stream": "^1.0.1",
     "through2": "^2.0.0"
   },
-  "bin": "./index.js",
+  "bin": "./bin.js",
   "devDependencies": {},
   "scripts": {
-    "prepublish": "npm ls",
-    "test": "test.sh"
+    "prepublish": "./index.js index.js > bin.js && npm ls",
+    "test": "./test.sh"
   },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "license": "MIT"
