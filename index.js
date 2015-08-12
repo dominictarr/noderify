@@ -6,7 +6,6 @@ var fs = require('fs')
 var moduleDeps = require('module-deps')
 var resolve = require('resolve')
 var through = require('through2')
-var nodepack = require('nodepack')
 var sort = require('sort-stream')
 var deterministic = require('./deterministic')
 var pack = require('./pack')
@@ -153,11 +152,5 @@ deps
       if(err) throw err
       console.log(pack(content, deps, entry))
     }))
-//  .pipe(sort(function (a, b) {
-//    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0
-//  }))
-//
-//  .pipe(nodepack(opts))
-//  .pipe(process.stdout)
-//
+
 deps.end(entry)
