@@ -92,7 +92,10 @@ var deps = moduleDeps({
     return !~filter.indexOf(s)
   },
   resolve: function (a, b, cb) {
-    return resolve (a, {basedir: path.dirname(b.filename), extensions: ['.js', '.json', '.node']},
+    return resolve (a, {
+        basedir: path.dirname(b.filename),
+        extensions: ['.js', '.json', '.node']
+      },
       function (err, file) {
         if (file) {
           if (file[0] !== '/') {
@@ -112,6 +115,7 @@ var deps = moduleDeps({
   }
 })
   .on('data', function (e) {
+    e.id = path.relative(process.cwd(), e.id)
     e.source = e.source.replace(/^\s*#![^\n]*/, '\n')
     // secret magic sauce
     for (var id in replace) {
@@ -127,6 +131,8 @@ var deps = moduleDeps({
       // console.error(e.id, k, e.deps[k])
       if(!e.deps[k])
         delete e.deps[k]
+      else
+        e.deps[k] = path.relative(process.cwd(), e.deps[k])
     }
   })
 
@@ -136,6 +142,9 @@ if (argv.prelude) {
   opts.prelude = fs.readFileSync(preludePath, 'utf-8')
   opts.preludePath = preludePath
 }
+
+if(opts.shebang !== false)
+  console.log('#! /usr/bin/env node')
 
 deps
   .pipe(sort(function (a, b) {
