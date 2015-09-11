@@ -20,18 +20,30 @@ var native_modules = [
   'timers', 'tls', 'tty', 'url', 'util', 'v8', 'vm', 'zlib'
 ]
 
+var electron_modules = [
+  'app', 'auto-updater', 'browser-window', 'content-tracing',
+  'dialog', 'global-shortcut', 'ipc', 'menu', 'menu-item',
+  'power-monitor', 'power-save-blocker', 'protocol', 'tray',
+  'remote', 'web-frame', 'clipboard', 'crash-reporter',
+  'native-image', 'screen', 'shell'
+]
+
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {
     f: 'filter',
     p: 'prelude',
-    v: 'version'
-  }
+    v: 'version',
+    e: 'electron'
+  },
+  boolean: ['electron', 'version']
 })
 
 if(argv.version)
   return console.log(require('./package.json').version)
 
-var filter = [].concat(argv.filter).concat(native_modules)
+var filter = [].concat(argv.filter)
+              .concat(native_modules)
+              .concat(argv.electron ? electron_modules : [])
 
 function exists (p) {
   try {
