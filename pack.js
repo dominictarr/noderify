@@ -4,20 +4,22 @@ function prelude (content, deps, entry) {
 
   function load (file) {
     var d = deps[file]
-    if(cache[file]) return cache[d]
+    if(cache[file]) return cache[file]
     if(!d) return require(file)
     var fn = content[d[0]] //the actual module
     var module = {exports: {}, parent: file !== entry}
-    return cache[file] = fn(
+    fn(
       function (m) {
-        if(!deps[file][m]) return require(m)
-        else               return load (deps[file][m])
+        //console.error('require', m, d[1][m])
+        if(!d[1][m]) return require(m)
+        else         return load (d[1][m])
       },
       module,
       module.exports,
       file.substring(file.lastIndexOf('/')),
       file
     )
+    return cache[file] = module.exports
   }
 
   return load(entry)
