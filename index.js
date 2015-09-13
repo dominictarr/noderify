@@ -40,6 +40,8 @@ var argv = require('minimist')(process.argv.slice(2), {
 
 if(argv.electron) argv.shebang = false
 
+console.error(argv)
+
 if(argv.version)
   return console.log(require('./package.json').version)
 
@@ -151,14 +153,7 @@ var deps = moduleDeps({
     }
   })
 
-var opts = {raw: true}
-if (argv.prelude) {
-  var preludePath = path.resolve(argv.prelude)
-  opts.prelude = fs.readFileSync(preludePath, 'utf-8')
-  opts.preludePath = preludePath
-}
-
-if(opts.shebang !== false)
+if(argv.shebang !== false)
   console.log('#! /usr/bin/env node')
 
 deps
