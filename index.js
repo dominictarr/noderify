@@ -38,6 +38,8 @@ var argv = require('minimist')(process.argv.slice(2), {
   boolean: ['electron', 'version']
 })
 
+if(argv.electron) argv.shebang = false
+
 if(argv.version)
   return console.log(require('./package.json').version)
 
