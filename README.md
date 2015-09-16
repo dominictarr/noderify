@@ -1,6 +1,6 @@
 # noderify
 
-browserfy for the server side.
+browserify for the server side.
 
 ## Why would you do this?
 
