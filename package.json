@@ -1,7 +1,7 @@
 {
   "name": "noderify",
   "description": "browserify for node",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "homepage": "https://github.com/dominictarr/noderify",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "devDependencies": {},
   "scripts": {
     "prepublish": "./test.sh && ./index.js index.js > bin.js && npm ls",
-    "test": "./test.sh"
+    "test": "./test/index.sh"
   },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "license": "MIT"
