@@ -8,6 +8,8 @@ function prelude (content, deps, entry) {
     var fn = content[d[0]] //the actual module
     var module = cache[file] = {exports: {}, parent: file !== entry}
     cache[file] = module
+    var resolved = require('path').resolve(file)
+    var dirname = require('path').dirname(resolved)
     fn(
       function (m) {
         if(!d[1][m]) return require(m)
@@ -15,8 +17,8 @@ function prelude (content, deps, entry) {
       },
       module,
       module.exports,
-      file.substring(file.lastIndexOf('/')),
-      file
+      dirname,
+      resolved
     )
     return cache[file].exports
   }
