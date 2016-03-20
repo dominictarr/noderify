@@ -8,14 +8,16 @@ tidy () {
   rm _*.js 2> /dev/null
 }
 
-cd $(dirname $BASH_SOURCE)
+echo $PWD
+#cd $(dirname $BASH_SOURCE)
 
+echo $PWD
 tidy
 
 set -e
 
-noderify=../index.js
-for file in *.js; do
+noderify=./index.js
+for file in test/*.js; do
 
   echo $noderify  "$file"
   time $noderify "$file" > _bundle.js
