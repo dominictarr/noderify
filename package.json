@@ -17,7 +17,7 @@
   "bin": "./bin.js",
   "devDependencies": {},
   "scripts": {
-    "prepublish": "./test.sh && ./index.js index.js > bin.js && npm ls",
+    "prepublish": "./test/test.sh && ./index.js index.js > bin.js && npm ls",
     "test": "./test/index.sh"
   },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
