@@ -80,12 +80,54 @@ noderify
 
 ```
 
-## TODO
+## how it works
 
-This was hacked up before a talk about secure-scuttlebutt
-so that I could demo it without embarassment ;)
-working, but not 100% yet!
+noderify creates a javascript bundle with a different arrangement to browserify.
+the first thing is a `prelude` function which takes content and structure
+of the bundle and assembles it together (injecting `require` and `module` variables, etc)
+this function is self-evaluating so running the javascript bundle runs the program.
+
+``` js
+prelude(content, dependencies, entry)
+```
+
+`content` is a content addressed mapping from the _base64 encoded sha256 hash of each content file_ to that file (as a module closure)
+in node.js modules, a given file may be used multiple times,
+and might even have different names. Since the content is hashed,
+if different versions of a single module occur, but have different names,
+they are not duplicated.
+
+``` js
+content = {<hash(file)>: <file>, ..}
+```
+
+`dependencies` represents the dependency tree. It is a mapping of
+`filename` to the content hash (so it can be looked up in the `content` object)
+and then that file's internal dependencies. the file's dependencies
+map from the dependency expression within that file (it could be relative
+like `require('./lib/util.js')` or to an installed module like `require('minimist')`
+by pointing to the actual filename that expression maps to, the noderify
+prelude function does not require an internal model of the file system,
+it can simply look up the mappings for each file.
+
+``` js
+dependencies = {
+  <filename>: [hash(file), { <relative_require>: <filename>, ...}]
+}
+```
+
+`entry` is just the file name in the dependency tree to call first.
+
+## TODO - dynamic linker
+
+noderify (like browserify) is essentially a [_static linker for javascript_](https://en.wikipedia.org/wiki/Static_library)
+for certain applications, it would be interesting to have a _dynamic linker_.
+In particular, for something like [depject](https://github.com/dominictarr/depject)
+a dynamic linker could combine multiple dependency trees into a single bundle.
 
 ## License
 
 MIT
+
+
+
