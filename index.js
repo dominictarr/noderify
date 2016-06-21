@@ -33,7 +33,8 @@ var argv = require('minimist')(process.argv.slice(2), {
     f: 'filter',
     p: 'prelude',
     v: 'version',
-    e: 'electron'
+    e: 'electron',
+    'ignore-missing': 'ignoreMissing'
   },
   boolean: ['electron', 'version']
 })
@@ -82,7 +83,7 @@ var entry = path.resolve(argv._[0])
 
 var replace = {}
 var deps = moduleDeps({
-  ignoreMissing: true,
+  ignoreMissing: argv.ignoreMissing,
   globalTransform: function (file, opts) {
     return through(function (chunk, enc, cb) {
       chunk += ''
@@ -112,6 +113,7 @@ var deps = moduleDeps({
         extensions: ['.js', '.json', '.node']
       },
       function (err, file) {
+        if(err) return cb (err)
         if (file) {
           if (file[0] !== '/') {
             var c = a.split('/')[0]
@@ -126,6 +128,11 @@ var deps = moduleDeps({
     })
   },
   postFilter: function (id, file, pkg) {
+    if(/\.node$/.test(id)) console.error(id, file)
+    //console.error(id, file)
+    return file || !(/\.node$/.test(id))
+    //return true
+    console.error(id, file, pkg)
     return !!file
   }
 })
@@ -161,3 +168,7 @@ deps
     }))
 
 deps.end(entry)
+
+
+
+
