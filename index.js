@@ -4,7 +4,7 @@ var path = require('path')
 var join = path.join
 var fs = require('fs')
 var moduleDeps = require('module-deps')
-var resolve = require('resolve')
+var resolve = require('browser-resolve')
 var through = require('through2')
 var sort = require('sort-stream')
 var deterministic = require('./deterministic')
@@ -92,7 +92,9 @@ var deps = moduleDeps({
       if (m) {
         var basedir = pkgRoot(file)
         var n = m[1].substr(-5) === '.node' ? m[1] : m[1]+ '.node'
-        resolve('./build/Release/'+n, {basedir: pkgRoot(file), extensions: ['.node']},
+        resolve(
+          './build/Release/'+n,
+          {basedir: pkgRoot(file), extensions: ['.node'], browser: 'noderify'},
           function (err, p) {
             chunk = chunk.replace(m[0], "require('./"+path.relative(basedir, p)+"')")
             s.push(chunk)
@@ -110,6 +112,7 @@ var deps = moduleDeps({
   resolve: function (a, b, cb) {
     return resolve (a, {
         basedir: path.dirname(b.filename),
+        browser: 'noderify',
         extensions: ['.js', '.json', '.node']
       },
       function (err, file) {
