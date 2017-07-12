@@ -77,6 +77,21 @@ sys     0m0.033s
 noderify
   -f mod                # excludes mod from the bundle
   -p prelude.js         # specify a custom prelude file (see nodepack's implementation for reference)
+  --filter module_name1
+                        # exclude this module from the bundle, use for native addons. (may be repeated)
+  --replace.module_name=new-module-name
+                        # map one module to another.
+```
+
+since `noderify` uses `rc` it configuration may be set in a local `.noderifyrc` file in json format.
+
+``` js
+{
+  "filter": ["module_name1", "module_name2"],
+  "replace": {
+    "sodium-native": "sodium-javascript"
+  }
+}
 
 ```
 
