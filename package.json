@@ -15,7 +15,10 @@
     "through2": "^2.0.0"
   },
   "bin": "./bin.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "leveldown": "^1.7.2",
+    "sodium-native": "^1.10.2"
+  },
   "scripts": {
     "prepublish": "./test/index.sh && ./index.js index.js > bin.js && npm ls",
     "test": "./test/index.sh"
