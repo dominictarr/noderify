@@ -4,6 +4,7 @@ var path = require('path')
 var join = path.join
 var fs = require('fs')
 
+
 // io.js native modules
 var native_modules = [
   'assert', 'buffer', 'child_process', 'cluster', 'console',
@@ -22,6 +23,7 @@ var electron_modules = [
   'native-image', 'screen', 'shell'
 ]
 
+
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {
     f: 'filter',
@@ -33,26 +35,28 @@ var argv = require('minimist')(process.argv.slice(2), {
   boolean: ['electron', 'version']
 })
 
-if(argv.electron) argv.shebang = false
+//startup noderify with optimist's defaults
+var opts = require('rc')('noderify', {}, argv)
 
-if(argv.version)
+if(opts.electron) argv.shebang = false
+
+if(opts.version)
   return console.log(require('./package.json').version)
 
-var filter = [].concat(argv.filter)
+var filter = [].concat(opts.filter)
               .concat(native_modules)
-              .concat(argv.electron ? electron_modules : [])
+              .concat(opts.electron ? electron_modules : [])
 
-if(!argv._[0]) {
+console.error("OPTS", opts)
+
+if(!opts._[0]) {
   console.error('usage: noderify entry.js > bundle.js')
   process.exit(1)
 }
 
-var entry = path.resolve(argv._[0])
+var entry = opts.entry || path.resolve(opts._[0])
 
-var replace = {}
-
-if(argv.shebang !== false)
-  console.log('#! /usr/bin/env node')
+//var replace = {}
 
 //deps
 //  .pipe(deterministic(function (err, content, deps, entry) {
@@ -65,9 +69,14 @@ if(argv.shebang !== false)
 require('./inject')({
   entry: entry,
   filter: filter,
-  replace: argv.replace || {},
-  ignoreMissing: argv.ignoreMissing
+  replace: opts.replace || {},
+  ignoreMissing: opts.ignoreMissing
 }, function (err, src) {
   if(err) throw err
   console.log(src)
 })
+
+
+
+
+

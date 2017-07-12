@@ -62,13 +62,14 @@ function createDepStream(opts) {
 //      })
 //    },
     filter: function (s) {
-      return !~opts.filter.indexOf(s)
+      return (!~opts.filter.indexOf(s)) && opts.replace[s] !== false
     },
     resolve: function (required, module, cb) {
 //      console.error(opts.replace)
       if(opts.replace && opts.replace[required]) {
         required = opts.replace[required]
       }
+      if(opts.replace[required] === false) throw new Error('should not resolve:'+required)
       return resolve (required, {
           basedir: path.dirname(module.filename),
           extensions: ['.js', '.json', '.node']
@@ -90,10 +91,8 @@ function createDepStream(opts) {
     },
     postFilter: function (id, file, pkg) {
       if(/\.node$/.test(id)) console.error(id, file)
+
       return file || !(/\.node$/.test(id))
-      //return true
-      console.error(id, file, pkg)
-      return !!file
     }
   })
     .on('data', function (e) {
@@ -120,15 +119,21 @@ function createDepStream(opts) {
 }
 
 module.exports = function (opts, cb) {
+  console.error('NODERIFY', opts)
   var deps = createDepStream(opts)
   deps
   .pipe(deterministic(function (err, content, deps, entry) {
       if(err) cb(err)
-      else cb(null, pack(content, deps, entry))
+      else cb(null,
+        (opts.shebang !== false ? '#! /usr/bin/env node\n' : '') + 
+        pack(content, deps, entry)
+
+      )
     }))
 
   deps.end(opts.entry)
 
 }
+
 
 
