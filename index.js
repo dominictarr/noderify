@@ -47,8 +47,6 @@ var filter = [].concat(opts.filter)
               .concat(native_modules)
               .concat(opts.electron ? electron_modules : [])
 
-console.error("OPTS", opts)
-
 if(!opts._[0]) {
   console.error('usage: noderify entry.js > bundle.js')
   process.exit(1)
@@ -75,6 +73,7 @@ require('./inject')({
   if(err) throw err
   console.log(src)
 })
+
 
 
 
